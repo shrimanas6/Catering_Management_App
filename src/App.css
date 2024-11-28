@@ -1,38 +1,184 @@
-.App {
-  text-align: center;
+.card-cont{
+  max-width: 50%;
+  margin : auto;
+  min-height : 650px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+
+.group-content {
+  margin-left: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.group {
+  line-height: 0px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.dropdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  background: white;
+  position: absolute;
+  max-height: 150px;
+  overflow-y: auto;
+  width: 333px;
+  padding-top: 5px;
+}
+
+.dropdown-item {
+  padding: 8px;
+  cursor: pointer;
+  padding-bottom: 18px;
+  padding-top: 18px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+.align-col{
+  display: grid;
+  grid-template-columns: auto auto ;
+}
+
+.align-colum{
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+textarea {
+  width: 97%;
+  min-height: 50px;
+}
+
+.btn-arr{
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: flex-start;
+}
+
+.btn{
+  margin-right: 20px;
+}
+
+.btn-add{
+  margin-top: 25px;
+  margin-right: 15px;
+}
+
+.btn.selected {
+  background-color: #3f51b5; /* Example color */
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.btn.add-item{
+  background-color: #3f51b5;
+  color: white;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.btn-submit {
+display: flex;
+justify-content: center;
+background-color: #3f51b5;
+color: white !important;
+border-radius: 4px;
+}
+
+.btn-submit button{
+  color: white !important;
+}
+
+.paper{
+  max-width: 694px;
+  margin-bottom: 20px;
+}
+
+.table-head{
+  background-color: grey;
+}
+
+.container-color{
+  background-color: rgb(244, 239, 231);
+}
+
+.inputCss{
+  width: 94% !important;
+}
+
+.inputQ{
+  width : 90%
+}
+
+.textArea{
+  width : 97% !important
+}
+
+
+@media screen and (min-width: 480px) and (max-width: 580px) {
+
+  .card-cont{
+    max-width: 432px;
+    flex-grow: 1;
   }
-  to {
-    transform: rotate(360deg);
+
+  .paper {
+   max-width: 390px;
   }
 }
+
+@media screen and (min-width: 580px) and (max-width: 700px) {
+
+  .card-cont{
+    max-width: 532px;
+    flex-grow: 1;
+  }
+  
+  .paper {
+     max-width: 495px;
+  }
+ 
+}
+
+@media screen and (min-width: 700px) and (max-width: 840px) {
+  .card-cont {
+    max-width: 800px;
+    margin: 0 auto; /* Center the container */
+  }
+
+  .paper {
+    width: calc(100% - 40px); /* Always 40px less than the .card-cont width */
+    max-width: 760px; /* Ensure it doesn't exceed 760px */
+    flex-grow: 1;
+  }
+}
+
+
+@media screen and (min-width: 700px) and (max-width: 1000px) {
+  .card-cont {
+    max-width: 800px;
+    margin: 0 auto; /* Center the container */
+  }
+
+  .paper {
+    width: calc(100% - 20px); /* Always 40px less than the .card-cont width */
+    max-width: 760px; /* Ensure it doesn't exceed 760px */
+    flex-grow: 1;
+  }
+}
+
+@media screen and (min-width: 1000px) and (max-width: 1500px) {
+  .card-cont {
+    max-width: 800px;
+    margin: 0 auto; /* Center the container */
+  }
+
+  .paper {
+    width: calc(100% - 20px); /* Always 40px less than the .card-cont width */
+    max-width: 760px; /* Ensure it doesn't exceed 760px */
+    flex-grow: 1;
+  }
+}
+
+
+
