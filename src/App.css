@@ -102,6 +102,8 @@ border-radius: 4px;
   background-color: rgb(244, 239, 231);
 }
 
+
+
 .inputCss{
   width: 94% !important;
 }
@@ -113,6 +115,26 @@ border-radius: 4px;
 .textArea{
   width : 97% !important
 }
+
+.head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.data{
+  line-height: 1px;
+}
+
+.light {
+  font-weight: normal;
+}
+
+.modal-head{
+  display: flex;
+  justify-content: space-between;
+}
+
+
 
 
 @media screen and (min-width: 480px) and (max-width: 580px) {
