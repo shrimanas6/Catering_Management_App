@@ -1,137 +1,168 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Chip,
+  Stack,
+} from '@mui/material';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import axios from 'axios';
 
-const ModalData = () => {
-  const columns = [
-    { id: 'session', label: 'Session', minWidth: 100, align: 'left' },
-    { id: 'food', label: 'Food Item', minWidth: 100, align: 'center' },
-    { id: 'people', label: 'People', minWidth: 100, align: 'right' },
-    { id: 'timing', label: 'Timing', minWidth: 100, align: 'right' },
-  ];
+const ModalData = ({ details }) => {
+  const [itemMap, setItemMap] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentFoodItems, setCurrentFoodItems] = useState([]);
 
-  const initialData = [
-    {
-      session: 'Morning',
-      foodItems: 'Gobi',
-      quantity: '10',
-      timing: '8:30am',
-    },
-    {
-      session: 'Afternoon',
-      foodItems: 'Masala Dosa',
-      quantity: '20',
-      timing: '9:00pm',
-    },
-  ];
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get('http://localhost:8082/cater/fetchAllItems');
+        const items = response.data;
+        const map = {};
+        items.forEach(item => {
+          map[item.itemId] = item.itemName;
+        });
+        setItemMap(map);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    };
+    fetchItems();
+  }, []);
 
-  const [data] = useState(initialData);
+  const handleOpenFoodModal = (items) => {
+    const itemNames = items.map(item => itemMap[item.itemId] || 'Loading...');
+    setCurrentFoodItems(itemNames);
+    setOpenDialog(true);
+  };
 
-  // Download PDF Function
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
   const downloadPDF = () => {
     const doc = new jsPDF();
-  
-    // Add logo
-    const logoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGnmrgCWfgo_sMSRqHXnOKALHltLHZeny-4w&s'; // Replace with your logo URL or base64 encoded string
-    const imgWidth = 50; // Adjust width of logo
-    const imgHeight = 15; // Adjust height of logo
-    const logoXPos = 10; // X position of logo
-    const logoYPos = 10; // Y position of logo
-  
-    doc.addImage(logoUrl, 'PNG', logoXPos, logoYPos, imgWidth, imgHeight);
-  
-    // Add header text next to the logo
-    const headerText = `
-      Company Name
-      1234, Street Name, City, State - ZIP
-      Email: contact@company.com | Phone: +1234567890
-    `;
-  
-    const headerXPos = logoXPos + imgWidth + 10; // Align header to the right of the logo
-    const headerYPos = logoYPos + 5; // Slightly lower to align with logo center
-  
+    const logoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGnmrgCWfgo_sMSRqHXnOKALHltLHZeny-4w&s';
+    doc.addImage(logoUrl, 'PNG', 10, 10, 50, 15);
+
     doc.setFontSize(10);
-    const headerLines = headerText.trim().split('\n');
-    headerLines.forEach((line, index) => {
-      doc.text(line.trim(), headerXPos, headerYPos + index * 5); // Spacing between header lines
+    const header = `Company Name\n1234 Street, City, ZIP\nEmail: contact@company.com | Phone: 1234567890`;
+    header.split('\n').forEach((line, i) => doc.text(line, 70, 15 + i * 5));
+
+    let y = 40;
+    details.sessionsJsonModel.forEach((session) => {
+      doc.setFontSize(12);
+      doc.text(`Session: ${session.sessionName}`, 10, y);
+      y += 6;
+      doc.text(`Date: ${session.eventDate}`, 10, y);
+      y += 6;
+      doc.text(`Time: ${session.sessionBeginTime} - ${session.sessionEndTime}`, 10, y);
+      y += 6;
+      doc.text(`People: ${session.sessionQuantity}`, 10, y);
+      y += 6;
+
+      const foodNames = session.sessionItemsJsonModels
+        .map(item => itemMap[item.itemId])
+        .filter(Boolean)
+        .join(', ');
+      doc.text(`Food Items: ${foodNames}`, 10, y);
+      y += 10;
     });
-  
-    // Add title below the header
-    // const titleText = 'Order Information';
-    const titleYPos = logoYPos + imgHeight + 10; // Position below logo and header
-  
-    doc.setFontSize(16);
-    // doc.text(titleText, 10, titleYPos);
-  
-    // Add table
-    const tableStartY = titleYPos + 10; // Position table below the title
-  
-    doc.autoTable({
-      head: [['Session', 'Food Items', 'Quantity', 'Timing']], // Column labels
-      body: data.map((row) => [row.session, row.foodItems, row.quantity, row.timing]),
-      startY: tableStartY,
-    });
-  
-    // Save PDF
+
     doc.save('order-info.pdf');
   };
-  
-  
+
+  const columns = [
+    { id: 'session', label: 'Session', align: 'left' },
+    { id: 'food', label: 'Food Items', align: 'center' },
+    { id: 'people', label: 'People', align: 'right' },
+    { id: 'begin', label: 'Begin Time', align: 'right' },
+    { id: 'end', label: 'End Time', align: 'right' },
+  ];
 
   return (
-    <div>
-      <div className="head">
-        <div className="data">
-          <h5>Customer Name</h5>
-          <h5 className="light">Rakshan</h5>
-        </div>
+    <Box>
+      {/* Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Box>
+          <Typography variant="h6">Customer Name</Typography>
+          <Typography color="text.secondary">{details?.customerName}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="h6">Function Date</Typography>
+          <Typography color="text.secondary">{details?.sessionsJsonModel[0]?.eventDate}</Typography>
+        </Box>
+      </Box>
 
-        <div className="data">
-          <h5>Function Date</h5>
-          <h5 className="light">16-Oct-2024</h5>
-        </div>
-      </div>
+      {/* PDF Download */}
+      <Button variant="contained" onClick={downloadPDF} sx={{ mb: 2 }}>
+        Download PDF
+      </Button>
 
-      <div>
-        <h5>Order Info</h5>
-        <Button variant="contained" color="primary" onClick={downloadPDF} sx={{ mb: 2 }}>
-          Download PDF
-        </Button>
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{
-                        minWidth: column.minWidth,
-                        backgroundColor: 'lightgray',
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.map((row, index) => (
-                  <TableRow key={index} hover role="checkbox" tabIndex={-1}>
-                    <TableCell align="left">{row.session}</TableCell>
-                    <TableCell align="center">{row.foodItems}</TableCell>
-                    <TableCell align="right">{row.quantity}</TableCell>
-                    <TableCell align="right">{row.timing}</TableCell>
-                  </TableRow>
+      {/* Table */}
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 500 }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableCell key={col.id} align={col.align} sx={{ backgroundColor: 'lightgray' }}>
+                    {col.label}
+                  </TableCell>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </div>
-    </div>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {details.sessionsJsonModel.map((row, index) => (
+                <TableRow key={index} hover>
+                  <TableCell align="left">{row.sessionName}</TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleOpenFoodModal(row.sessionItemsJsonModels)}
+                    >
+                      View Items
+                    </Button>
+                  </TableCell>
+                  <TableCell align="right">{row.sessionQuantity}</TableCell>
+                  <TableCell align="right">{row.sessionBeginTime}</TableCell>
+                  <TableCell align="right">{row.sessionEndTime}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
+      {/* Food Items Modal */}
+      <Dialog open={openDialog} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Food Items</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1} direction="row" flexWrap="wrap">
+            {currentFoodItems.map((item, idx) => (
+              <Chip key={idx} label={item} color="primary" variant="outlined" />
+            ))}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

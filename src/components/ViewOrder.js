@@ -13,32 +13,17 @@ import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import ModalData from './ModalData';
 import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'id', label: '#', minWidth: 100, align: 'left' },
-  { id: 'name', label: 'Customer Name', minWidth: 100, align: 'left' },
-  { id: 'contact', label: 'Contact Number', minWidth: 100, align: 'center' },
-  { id: 'date', label: 'Function Date', minWidth: 100, align: 'right' },
-  { id: 'place', label: 'Function Place', minWidth: 100, align: 'right' },
-  { id: 'note', label: 'Note', minWidth: 100, align: 'center' },
-  { id: 'actions', label: 'Actions', minWidth: 100, align: 'center' },
-];
-
-const data = [
-  {
-    date: '16/10/2024',
-    name: 'Rakshan',
-    place: 'Bangalore',
-    contact: '8431171631',
-    note: 'Add some spice',
-  },
-  {
-    date: '12/10/2024',
-    name: 'Nishan',
-    place: 'Mangalore',
-    contact: '9431171632',
-    note: 'Add some spices',
-  },
+  { id: 'id', label: '#', minWidth: 101, align: 'left' },
+  { id: 'name', label: 'Customer Name', minWidth: 101, align: 'left' },
+  { id: 'contact', label: 'Contact Number', minWidth: 101, align: 'center' },
+  { id: 'date', label: 'Function Date', minWidth: 101, align: 'right' },
+  { id: 'place', label: 'Function Place', minWidth: 101, align: 'right' },
+  { id: 'note', label: 'Note', minWidth: 101, align: 'center' },
+  { id: 'actions', label: 'Actions', minWidth: 101, align: 'center' },
 ];
 
 const modalStyle = {
@@ -55,16 +40,45 @@ const modalStyle = {
 export default function ViewOrder() {
   const [open, setOpen] = React.useState(false);
   const [modalData, setModalData] = React.useState(null);
+  const [details, setDetails] = React.useState([])
+
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    getOrders()
+  }, [])
+
+  const getOrders = async () => {
+    try {
+      const response = await axios.get("http://localhost:8082/cater/fetchSessionsBulkOrder");
+      setDetails(response?.data);
+    } catch (e) {
+      console.log("Error fetching orders:", e);
+    }
+  };
+
+  console.log('data123', details)
 
   const handleOpen = (row) => {
+    console.log('row123', row)
     setModalData(row);
     setOpen(true);
   };
 
+  const handleDelete = async (id) => {
+    console.log('id123', id)
+    try {
+      const response = await axios.delete(`http://localhost:8082//deleteCustomers/${id}`);
+      console.log('response123', response)
+    } catch (e) {
+      console.log("Error fetching orders:", e);
+    }
+  }
+
   const handleClose = () => setOpen(false);
 
   const shareOnWhatsApp = (row) => {
-    
+
     const message = `
       Order Details:
       - Customer Name: ${row.name}
@@ -77,21 +91,32 @@ export default function ViewOrder() {
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
   };
+
+
+
+    const handleEdit = (row) => {
+      navigate('/add-order', { state: { row } });
+    };
   
+
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container>
+      <Container
+        sx={{
+          // display: 'flex',
+          // justifyContent: 'center',
+          height: '100vh',
+          marginTop: '50px'
+        }}
+      >
         <Box
           sx={{
             bgcolor: '#ffffff',
             height: '50vh',
-            width: '80vw',
-            padding: '16px',
           }}
         >
-          <h5>List Orders Info</h5>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table">
@@ -112,14 +137,14 @@ export default function ViewOrder() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((row, index) => (
+                  {details.map((row, index) => (
                     <TableRow key={index} hover role="checkbox" tabIndex={-1}>
                       <TableCell align="left">{index + 1}</TableCell>
-                      <TableCell align="left">{row.name}</TableCell>
-                      <TableCell align="center">{row.contact}</TableCell>
-                      <TableCell align="right">{row.date}</TableCell>
-                      <TableCell align="right">{row.place}</TableCell>
-                      <TableCell align="center">{row.note}</TableCell>
+                      <TableCell align="left">{row.customerName}</TableCell>
+                      <TableCell align="center">{row.customerMobile}</TableCell>
+                      <TableCell align="right">{row.customerCreateDate}</TableCell>
+                      <TableCell align="right">{row.customerAddress}</TableCell>
+                      <TableCell align="center">{row.eventNote}</TableCell>
                       <TableCell align="center">
                         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
                           <svg
@@ -150,6 +175,7 @@ export default function ViewOrder() {
                             strokeWidth={1.5}
                             stroke="currentColor"
                             className="size-6"
+                            onClick={() => handleDelete(row?.customerId)}
                           >
                             <path
                               strokeLinecap="round"
@@ -173,6 +199,24 @@ export default function ViewOrder() {
                               d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
                             />
                           </svg>
+
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="size-6"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => handleEdit(row)}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L7.75 18.964l-4.25 1.25 1.25-4.25L16.862 3.487Zm0 0L19.5 6.125"
+                            />
+                          </svg>
+
 
                         </Box>
                       </TableCell>
@@ -199,7 +243,7 @@ export default function ViewOrder() {
           </Typography>
           {modalData && (
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              <ModalData />
+              <ModalData details={modalData} />
             </Typography>
           )}
         </Box>

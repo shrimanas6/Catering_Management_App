@@ -1,7 +1,14 @@
 .card-cont{
-  max-width: 50%;
+  /* max-width: 50%; */
   margin : auto;
-  min-height : 650px;
+  min-height : 500px;
+  background-color: #FAFAFA !important;
+}
+
+.session-cont{
+  margin : auto;
+  height: auto;
+  background-color: #FAFAFA !important;
 }
 
 
@@ -49,7 +56,12 @@
 }
 
 textarea {
-  width: 97%;
+  width: 97% !important;
+  min-height: 50px;
+}
+
+.addressArea {
+  width: 94% !important;
   min-height: 50px;
 }
 
@@ -134,12 +146,22 @@ border-radius: 4px;
   justify-content: space-between;
 }
 
+.nextButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 45px;
+  margin-bottom: 20px;
+}
 
 
 
 @media screen and (min-width: 480px) and (max-width: 580px) {
 
   .card-cont{
+    max-width: 432px;
+    flex-grow: 1;
+  }
+  .session-cont{
     max-width: 432px;
     flex-grow: 1;
   }
@@ -156,6 +178,11 @@ border-radius: 4px;
     flex-grow: 1;
   }
   
+  .session-cont{
+    max-width: 532px;
+    flex-grow: 1;
+  }
+
   .paper {
      max-width: 495px;
   }
@@ -164,6 +191,11 @@ border-radius: 4px;
 
 @media screen and (min-width: 700px) and (max-width: 840px) {
   .card-cont {
+    max-width: 800px;
+    margin: 0 auto; /* Center the container */
+  }
+
+  .session-cont{
     max-width: 800px;
     margin: 0 auto; /* Center the container */
   }
@@ -182,6 +214,11 @@ border-radius: 4px;
     margin: 0 auto; /* Center the container */
   }
 
+  .session-cont{
+    max-width: 800px;
+    margin: 0 auto; /* Center the container */
+  }
+
   .paper {
     width: calc(100% - 20px); /* Always 40px less than the .card-cont width */
     max-width: 760px; /* Ensure it doesn't exceed 760px */
@@ -192,7 +229,12 @@ border-radius: 4px;
 @media screen and (min-width: 1000px) and (max-width: 1500px) {
   .card-cont {
     max-width: 800px;
-    margin: 0 auto; /* Center the container */
+    margin: 50px auto; /* Center the container */
+  }
+
+  .session-cont{
+    max-width: 800px;
+    margin: 50px auto; /* Center the container */
   }
 
   .paper {
@@ -200,6 +242,66 @@ border-radius: 4px;
     max-width: 760px; /* Ensure it doesn't exceed 760px */
     flex-grow: 1;
   }
+}
+
+
+@media screen and (min-width: 319px) and (max-width: 579px){
+  .orderResponsive{
+    display: flex !important;
+    flex-direction: column !important; /* This ensures items stack vertically */
+  }
+  .textArea{
+    width : 97% !important
+  }
+
+  .widthArea{
+    width : 104% !important
+  }
+}
+
+@media screen and (min-width: 319px) and (max-width: 479px){
+  .paper{
+    width:94% !important
+  }
+  .deleteIcon {
+    font-size: 1rem !important; /* Reduce icon size */
+  }
+}
+
+
+@media screen and (min-width: 319px) and (max-width: 580px){
+
+  .saveButton{
+    width: 94%;
+  }
+
+}
+
+@media screen and (min-width: 319px) and (max-width: 700px){
+
+ .nextButton{
+  margin-right: 25px;
+ }
+
+ .addIcon{
+  margin-right: 10px !important;
+ }
+
+}
+
+.saveButton{
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 45px;
+}
+
+@media screen and (min-width: 319px) and (max-width: 480px){
+
+  .saveButton{
+    display: flex;
+    justify-content: center;
+  }
+
 }
 
 
